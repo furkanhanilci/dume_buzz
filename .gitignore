@@ -19,3 +19,6 @@ deploy/dume-agents/work/
 # npm-installed ACP adapters: re-fetchable, and they drown any credential scan.
 deploy/dume-agents/acp/node_modules/
 deploy/dume-agents/acp/package-lock.json
+
+# Extracted agent private keys — runtime input, never a tracked file.
+deploy/dume-agents/buzz-builtin.json
