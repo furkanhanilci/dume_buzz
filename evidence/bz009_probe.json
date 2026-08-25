@@ -1,0 +1,18 @@
+{
+  "T01_relay_info": {
+    "software": "https://github.com/block/buzz",
+    "version": "0.2.1",
+    "auth_required": true,
+    "restricted_writes": true
+  },
+  "T02_owner_is_member": true,
+  "T04_stranger_refused": true,
+  "T05_admitted_is_member": true,
+  "T06_channel_id": "e4acb561-bb59-547c-b18e-154faea78969",
+  "T06_event_id": "b2a8cf0c7242bf39497311fbea1250e3fd07805b854235548511685213cf4c1b",
+  "T10_typed_tag_round_trip": {
+    "declared_type": "STATUS",
+    "author": "2fde1eaa0f35efdb"
+  },
+  "T10_messages_read": 2
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "dume.buzz_upstream_matrix/1",
+  "recorded_on": "2026-08-25",
+  "recorded_by": "BZ-001 / BZ-002 execution",
+  "dume": {
+    "head": "e836d76b3b4ba6d5d90fb6120f561385f1074b5a",
+    "matches_pack_reference": true,
+    "pack_reference": "e836d76b3b4ba6d5d90fb6120f561385f1074b5a",
+    "worktree_clean": true,
+    "test_baseline": "RED — 19 failed, 12 errors, 243 passed (cause: commissioning plan pack absent from disk; see BASELINE_LOCK.md)"
+  },
+  "buzz": {
+    "stable_release_tag": "desktop-v0.5.18",
+    "stable_release_commit": "39f8b46935736334cdd7045a4e4b5d7eb1a33888",
+    "stable_release_verified": true,
+    "stable_is_latest_desktop_release": true,
+    "release_commit_touches_relay": false,
+    "release_commit_files": [".release/desktop-candidate.json", "CHANGELOG.md", "desktop/package.json", "desktop/src-tauri/Cargo.lock", "desktop/src-tauri/Cargo.toml", "desktop/src-tauri/tauri.conf.json"],
+    "relay_equivalent_main_commit": "aea0ef8df9fc24d9aa8bf5c761ab2910026a601b",
+    "main_head_at_execution": "822c5ab231bc253d809d2d13da4b381f723dcd25",
+    "main_snapshot_in_pack": "a8e1c66c4a5017a32e41e04e2ba6059e2dfcae21",
+    "main_drift_since_pack_commits": 1,
+    "dume_previous_pin": "0720f5380ce8a6c050afac159f8462c06cd51ab5",
+    "dume_pin_is_main_ancestor": true,
+    "stable_tag_is_main_ancestor": false
+  },
+  "delta_stable_vs_dume_pin": {
+    "commits_in_dume_pin_not_in_stable": 31,
+    "commits_in_stable_not_in_dume_pin": 1,
+    "relay_handler_delta": "crates/buzz-relay/src/handlers/ingest.rs +149 — Huddle lifecycle validation only",
+    "unchanged_between_pins": ["crates/buzz-core/src/kind.rs", "docs/nips/NIP-OA.md", "docs/nips/NIP-PMA.md", "crates/buzz-agent"],
+    "changed_between_pins": ["crates/buzz-relay/src/audio/* (Huddles)", "crates/buzz-acp (1 prompt-section refactor)", "docs/nips/NIP-FI* (new docs)"],
+    "conclusion": "For every capability DUM-E depends on, stable and the previous pin are functionally identical. All deltas fall inside the pack's DEFER set (voice/huddles) or desktop-only surfaces."
+  },
+  "deployed": {
+    "image": "ghcr.io/block/buzz:sha-aea0ef8",
+    "image_digest": "sha256:e72000ec36211cb2b0da3d9865fa6a517db3135c4dea36cd8f4cdd3a64bf388e",
+    "rationale": "No image is published for the release commit 39f8b469 because release tags are cut off main and CI publishes per main commit. The release commit does not touch the relay, so sha-aea0ef8 is the relay of desktop-v0.5.18.",
+    "compose_source": "block/buzz @ desktop-v0.5.18 :: deploy/compose",
+    "project_name": "buzz-official",
+    "relay_url": "http://127.0.0.1:3100",
+    "relay_declared_version": "0.2.1"
+  }
+}

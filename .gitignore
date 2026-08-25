@@ -1,0 +1,6 @@
+# Secrets never enter git. ADR-0007: this tree is on ext4 so 0600 is real.
+secrets/
+deploy/official-buzz/.env
+
+# Upstream is a blobless clone, re-fetchable from its recorded ref.
+upstream/
