@@ -51,6 +51,10 @@ docker run -d --name "$NAME" \
   -v "$DATA/.local:/home/ubuntu/.local" \
   -v "$DATA/.config:/home/ubuntu/.config" \
   -v "$DATA/.cache:/home/ubuntu/.cache" \
+  `# Per-role provider wrappers: the Desktop spawns every agent with one
+   # set of provider variables, and roles bound to different families need
+   # different endpoints.` \
+  -v "$PWD/../dume-agents/wrappers:/opt/dume:ro" \
   --entrypoint /bin/bash \
   "$IMAGE" -c "mkdir -p /tmp/runtime && chmod 700 /tmp/runtime && exec /opt/buzz/AppRun $(printf '%q' "${DEEPLINK:-}")" >/dev/null
 

@@ -13,7 +13,14 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 RELAY="wss://otonom-cluster-0.taile59b41.ts.net"
+# The human, as the Desktop signs. The owner is always implicitly allowed.
 OWNER_PUBKEY="9d07f4c96b5e9e890c950769d73eac26b3186581ab7862295dad92e90734e09c"
+# DUM-E's own voices, so the harness can drive a role without a human typing.
+ALLOWLIST="$(python3 -c "
+import json,pathlib
+d=json.loads(pathlib.Path('../../secrets/roles.json').read_text())
+o=json.loads(pathlib.Path('../../secrets/owner.json').read_text())
+print(','.join([o['pubkey'], d['dume_orchestrator']['pubkey']]))")"
 SECRETS="$PWD/../../secrets"
 APP="$PWD/../desktop/squashfs-root"
 IMAGE=dume-agent:0.5.18
@@ -49,6 +56,7 @@ for role in $(roles); do
     continue
   fi
 
+  mkdir -p "$PWD/work/$role"
   docker rm -f "dume-agent-$role" >/dev/null 2>&1 || true
   docker run -d --name "dume-agent-$role" \
     --network host \
@@ -62,12 +70,19 @@ print(json.load(urllib.request.urlopen(u,timeout=5))['data'][0]['id'])" "$endpoi
     -e PATH=/opt/buzz/usr/bin:/usr/local/bin:/usr/bin:/bin \
     -v "$APP:/opt/buzz:ro" \
     -v "$PWD/prompts:/prompts:ro" \
+    -v "$PWD/work/$role:/home/ubuntu/.buzz" \
     "$IMAGE" \
       --relay-url "$RELAY" \
       --private-key "$(key "$role")" \
       --agent-owner "$OWNER_PUBKEY" \
+      --respond-to allowlist \
+      --respond-to-allowlist "$ALLOWLIST" \
       --agent-command buzz-agent \
       --agent-args "" \
+      `# Without an MCP command the agent has no tool to speak with: it generates
+       # a reply and nothing publishes it. The harness wires the Buzz CLI through
+       # this. Each role gets its own workspace so one cannot read another's.` \
+      --mcp-command buzz-dev-mcp \
       --channels "$(channels "$role")" \
       --system-prompt-file "/prompts/$role.md" \
       --dedup queue \

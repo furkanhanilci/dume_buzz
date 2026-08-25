@@ -14,3 +14,4 @@ deploy/desktop/squashfs-root/
 deploy/desktop/appdata/
 deploy/desktop/assets.html
 deploy/desktop/Dockerfile.xtools
+deploy/dume-agents/work/
