@@ -61,6 +61,13 @@ for role in $(roles); do
     continue
   fi
 
+  # Every agent gets buzz-dev-mcp, including the one that only talks. The shell
+  # is not an extra there: buzz-acp does not publish the reply itself — the
+  # agent posts it by running the Buzz CLI, so the shell *is* the voice. Taking
+  # it away produced an agent that thought for 50 seconds and said nothing.
+  # deploy/dume-agents/mcp/desk-mcp.py keeps the narrower attempt for the day a
+  # send-message tool can replace the shell.
+  MCP_ARGS="--mcp-command buzz-dev-mcp"
   mkdir -p "$PWD/work/$role"
   docker rm -f "dume-agent-$role" >/dev/null 2>&1 || true
   docker run -d --name "dume-agent-$role" \
@@ -75,6 +82,7 @@ print(json.load(urllib.request.urlopen(u,timeout=5))['data'][0]['id'])" "$endpoi
     -e PATH=/opt/buzz/usr/bin:/usr/local/bin:/usr/bin:/bin \
     -v "$APP:/opt/buzz:ro" \
     -v "$PWD/prompts:/prompts:ro" \
+    -v "$PWD/mcp:/opt/mcp:ro" \
     -v "$PWD/work/$role:/home/ubuntu/.buzz" \
     "$IMAGE" \
       --relay-url "$RELAY" \
@@ -87,7 +95,7 @@ print(json.load(urllib.request.urlopen(u,timeout=5))['data'][0]['id'])" "$endpoi
       `# Without an MCP command the agent has no tool to speak with: it generates
        # a reply and nothing publishes it. The harness wires the Buzz CLI through
        # this. Each role gets its own workspace so one cannot read another's.` \
-      --mcp-command buzz-dev-mcp \
+      ${MCP_ARGS} \
       --channels "$(channels "$role")" \
       --system-prompt-file "/prompts/$role.md" \
       --dedup queue \
