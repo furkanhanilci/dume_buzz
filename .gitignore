@@ -15,3 +15,7 @@ deploy/desktop/appdata/
 deploy/desktop/assets.html
 deploy/desktop/Dockerfile.xtools
 deploy/dume-agents/work/
+
+# npm-installed ACP adapters: re-fetchable, and they drown any credential scan.
+deploy/dume-agents/acp/node_modules/
+deploy/dume-agents/acp/package-lock.json
