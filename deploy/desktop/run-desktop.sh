@@ -10,6 +10,11 @@
 # rather than DISABLE_DMABUF_RENDERER, which it warns SIGSEGVs upstream (#3654).
 set -euo pipefail
 cd "$(dirname "$0")"
+# The deployment address, from one place. See deploy/host.env.example.
+DUME_BUZZ_HOST_WSS=""; DUME_BUZZ_HOST_HTTPS=""
+. "../deploy/host.env"
+DUME_BUZZ_HOST_WSS="wss://$DUME_BUZZ_HOST"
+DUME_BUZZ_HOST_HTTPS="https://$DUME_BUZZ_HOST"
 
 NAME=buzz-desktop
 IMAGE=buzz-desktop:0.5.18
@@ -58,6 +63,6 @@ docker run -d --name "$NAME" \
   --entrypoint /bin/bash \
   "$IMAGE" -c "mkdir -p /tmp/runtime && chmod 700 /tmp/runtime && exec /opt/buzz/AppRun $(printf '%q' "${DEEPLINK:-}")" >/dev/null
 
-echo "Buzz Desktop starting — relay: https://otonom-cluster-0.taile59b41.ts.net"
+echo "Buzz Desktop starting — relay: ${DUME_BUZZ_HOST_HTTPS}"
 echo "  logs:   ./run-desktop.sh logs"
 echo "  stop:   ./run-desktop.sh stop"

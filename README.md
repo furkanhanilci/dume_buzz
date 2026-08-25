@@ -47,12 +47,23 @@ rather than assumed, including the assumptions that did not survive contact:
 
 ## Reading it
 
-Start with `docs/dume-operations.html` for how the harness is run, then
-`baseline/BASELINE_LOCK.md` for why each piece is the way it is.
+| | |
+|---|---|
+| [`docs/deployment.md`](docs/deployment.md) | what runs, and how to start it |
+| [`docs/agents.md`](docs/agents.md) | the roles, and what decides which model each gets |
+| [`docs/command-bridge.md`](docs/command-bridge.md) | commanding DUM-E from a channel |
+| [`docs/findings.md`](docs/findings.md) | what was measured, and what turned out false |
+| [`baseline/BASELINE_LOCK.md`](baseline/BASELINE_LOCK.md) | the evidence record, in the order it was found |
+
+The address every client reaches this deployment at lives in `deploy/host.env`,
+which is not tracked. Copy `deploy/host.env.example` and set it.
 
 ## Not in here
 
 `secrets/` and `deploy/official-buzz/.env` hold the relay and agent keys and are
 never tracked. `deploy/dume-agents/buzz-builtin.json` is a runtime input for the
-same reason. The tailnet hostnames that do appear resolve only inside the
-tailnet.
+same reason, and `deploy/host.env` holds the address — it names a private
+tailnet, which is not a credential but is not something a clone needs either.
+
+What does appear: the agents' **public** keys, which exist to be published, and
+`/home/otonom` paths in the scripts that run here.

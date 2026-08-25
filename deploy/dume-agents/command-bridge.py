@@ -1,3 +1,6 @@
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(_pl.Path(__file__).resolve().parents[2] / "deploy"))
+from hostcfg import host as _host, relay_https as _relay_https  # noqa: E402
 #!/usr/bin/env python3
 """Carry a command from a Buzz channel into DUM-E, or refuse and say why.
 
@@ -40,7 +43,7 @@ SECRETS = ROOT / "secrets"
 SEEN = HERE / "work" / "command-bridge-seen.json"
 AUDIT = ROOT / "evidence" / "buzz_command_audit.jsonl"
 
-RELAY = "https://otonom-cluster-0.taile59b41.ts.net"
+RELAY = _relay_https()
 
 # Where a command may be given. Not every channel: a command surface is a
 # decision, and a role's working channel is not one.

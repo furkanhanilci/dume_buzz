@@ -22,3 +22,6 @@ deploy/dume-agents/acp/package-lock.json
 
 # Extracted agent private keys — runtime input, never a tracked file.
 deploy/dume-agents/buzz-builtin.json
+
+# The deployment address: real value untracked, shape in host.env.example.
+deploy/host.env

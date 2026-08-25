@@ -1,7 +1,7 @@
 {
   "schema": "dume.buzz_deployment_plan/1",
   "source": "RuntimeRegistry.bind() \u2014 the binder a live run uses",
-  "relay": "wss://otonom-cluster-0.taile59b41.ts.net",
+  "relay": "wss://$DUME_BUZZ_HOST \u2014 see deploy/host.env",
   "roles": {
     "architect": {
       "runtime_id": "qwen-local",

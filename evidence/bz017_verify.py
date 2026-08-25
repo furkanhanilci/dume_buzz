@@ -2,12 +2,15 @@
 
 Nothing is taken from the bootstrap's return value; every fact is queried.
 """
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(_pl.Path(__file__).resolve().parents[1] / "deploy"))
+from hostcfg import host as _host, relay_https as _relay_https  # noqa: E402
 import json, sys, pathlib
 sys.path.insert(0, '/home/otonom/Desktop/FH/DUM-E')
 from dume.collaboration.buzz import (
     Identity, BuzzClient, SPACE_CHANNELS, ROLE_CHANNELS, BuzzError)
 
-BASE = "http://100.104.142.19:3100"
+BASE = "http://<lan-host>:3100"
 SEC = pathlib.Path('/home/otonom/Desktop/FH/Buzz_Dume/secrets')
 o = json.loads((SEC/'owner.json').read_text())
 owner = BuzzClient(BASE, Identity(name=o["name"], private_hex=o["private_hex"],

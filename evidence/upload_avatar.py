@@ -4,12 +4,15 @@ Blossom BUD-02: the request carries a kind-24242 authorisation event naming the
 blob's sha256 in an `x` tag, base64-encoded in an `Authorization: Nostr` header.
 The blob is then addressed by that hash, so the URL is the content.
 """
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(_pl.Path(__file__).resolve().parents[1] / "deploy"))
+from hostcfg import host as _host, relay_https as _relay_https  # noqa: E402
 import base64, hashlib, json, sys, time, pathlib, urllib.request, urllib.error
 sys.path.insert(0, '/home/otonom/Desktop/FH/DUM-E')
 from dume.collaboration import nostr
 
 BASE = "http://127.0.0.1:3100"
-HOST = "otonom-cluster-0.taile59b41.ts.net"
+HOST = _host()
 blob = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'assets/dume-avatar.png').read_bytes()
 digest = hashlib.sha256(blob).hexdigest()
 

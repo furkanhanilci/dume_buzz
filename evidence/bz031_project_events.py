@@ -4,12 +4,15 @@ Every message is operational. None of it is a verdict: nothing here can move a
 work package or record a review, which is enforced by construction — this
 module only publishes and reads messages.
 """
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(_pl.Path(__file__).resolve().parents[1] / "deploy"))
+from hostcfg import host as _host, relay_https as _relay_https  # noqa: E402
 import json, sys, pathlib
 sys.path.insert(0, '/home/otonom/Desktop/FH/DUM-E')
 from dume.collaboration.buzz import (
     Identity, BuzzClient, SPACE_CHANNELS, load_identity, role_identity)
 
-BASE = "https://otonom-cluster-0.taile59b41.ts.net"
+BASE = _relay_https()
 STORE = pathlib.Path('/home/otonom/Desktop/FH/Buzz_Dume/secrets/roles.json')
 OPERATOR = sys.argv[1]
 

@@ -248,10 +248,10 @@ Everything now answers on the tailnet address, which is the only one reachable
 from the Desktop, a phone, and the deployment machine alike:
 
 ```
-BUZZ_DOMAIN=100.104.142.19
-RELAY_URL=ws://100.104.142.19:3100
-BUZZ_MEDIA_BASE_URL=http://100.104.142.19:3100/media
-RELAY_OPERATOR_API_ORIGIN=http://100.104.142.19:3100
+BUZZ_DOMAIN=<lan-host>
+RELAY_URL=ws://<lan-host>:3100
+BUZZ_MEDIA_BASE_URL=http://<lan-host>:3100/media
+RELAY_OPERATOR_API_ORIGIN=http://<lan-host>:3100
 BUZZ_CORS_ORIGINS=…tailnet, loopback, LAN, tauri://localhost
 ```
 
@@ -317,7 +317,7 @@ pair-relay:
   ports: ["5000:5000"]
 ```
 
-plus `BUZZ_PAIRING_RELAY_URL=ws://100.104.142.19:5000` on the relay.
+plus `BUZZ_PAIRING_RELAY_URL=ws://<lan-host>:5000` on the relay.
 
 Verified rather than assumed:
 
@@ -326,7 +326,7 @@ Verified rather than assumed:
 | `buzz-pair-relay` log | `listening on 0.0.0.0:5000` |
 | TCP from tailnet / LAN / loopback | open on all three |
 | WebSocket upgrade from the tailnet address | `HTTP/1.1 101 Switching Protocols` |
-| relay NIP-11 `pairing_relay_url` | `ws://100.104.142.19:5000` |
+| relay NIP-11 `pairing_relay_url` | `ws://<lan-host>:5000` |
 
 ## Still open
 

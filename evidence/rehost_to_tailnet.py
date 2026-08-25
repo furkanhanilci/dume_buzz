@@ -6,13 +6,16 @@ different workspaces. Everything here goes through supported APIs: the
 operator control plane provisions the host, then DUM-E's own bootstrap
 re-asserts its channels and roles. Channel ids are derived, so they survive.
 """
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(_pl.Path(__file__).resolve().parents[1] / "deploy"))
+from hostcfg import host as _host, relay_https as _relay_https  # noqa: E402
 import json, sys, pathlib
 sys.path.insert(0, '/home/otonom/Desktop/FH/DUM-E')
 from dume.collaboration.buzz import (
     Identity, BuzzClient, ensure_spaces, ensure_roles, SPACE_CHANNELS, BuzzError)
 
-BASE = "https://otonom-cluster-0.taile59b41.ts.net"
-HOST = "otonom-cluster-0.taile59b41.ts.net"
+BASE = _relay_https()
+HOST = _host()
 SEC = pathlib.Path('/home/otonom/Desktop/FH/Buzz_Dume/secrets')
 DESKTOP = sys.argv[1] if len(sys.argv) > 1 else None
 

@@ -4,12 +4,15 @@ kind 0 carries `picture`; DUM-E's set_profile only writes name and about, so the
 event is published directly. The identities are DUM-E's own, so this is the
 harness naming itself rather than Buzz configuration.
 """
+import sys as _sys, pathlib as _pl
+_sys.path.insert(0, str(_pl.Path(__file__).resolve().parents[1] / "deploy"))
+from hostcfg import host as _host, relay_https as _relay_https  # noqa: E402
 import json, sys, pathlib
 sys.path.insert(0, '/home/otonom/Desktop/FH/DUM-E')
 from dume.collaboration.buzz import Identity, BuzzClient, KIND_METADATA
 
-BASE = "https://otonom-cluster-0.taile59b41.ts.net"
-AVATAR = ("https://otonom-cluster-0.taile59b41.ts.net/media/"
+BASE = _relay_https()
+AVATAR = ("{_relay_https()}/media/"
           "b36e4c2445b47750956844938816e4e8951693b7fcbd7df50c8438cb5edccc9d.png")
 
 DISPLAY = {"architect": ("DUM-E Architect", "Turns a frozen packet into a plan. Decides no stage."),

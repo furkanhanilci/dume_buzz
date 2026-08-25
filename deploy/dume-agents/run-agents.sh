@@ -11,8 +11,13 @@
 # decides (BZ-042).
 set -euo pipefail
 cd "$(dirname "$0")"
+# The deployment address, from one place. See deploy/host.env.example.
+DUME_BUZZ_HOST_WSS=""; DUME_BUZZ_HOST_HTTPS=""
+. "../../deploy/host.env"
+DUME_BUZZ_HOST_WSS="wss://$DUME_BUZZ_HOST"
+DUME_BUZZ_HOST_HTTPS="https://$DUME_BUZZ_HOST"
 
-RELAY="wss://otonom-cluster-0.taile59b41.ts.net"
+RELAY="${DUME_BUZZ_HOST_WSS}"
 # The human, as the Desktop signs. The owner is always implicitly allowed.
 OWNER_PUBKEY="9d07f4c96b5e9e890c950769d73eac26b3186581ab7862295dad92e90734e09c"
 # DUM-E's own voices, so the harness can drive a role without a human typing.
