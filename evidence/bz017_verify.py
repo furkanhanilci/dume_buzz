@@ -7,7 +7,7 @@ sys.path.insert(0, '/home/otonom/Desktop/FH/DUM-E')
 from dume.collaboration.buzz import (
     Identity, BuzzClient, SPACE_CHANNELS, ROLE_CHANNELS, BuzzError)
 
-BASE = "http://127.0.0.1:3100"
+BASE = "http://100.104.142.19:3100"
 SEC = pathlib.Path('/home/otonom/Desktop/FH/Buzz_Dume/secrets')
 o = json.loads((SEC/'owner.json').read_text())
 owner = BuzzClient(BASE, Identity(name=o["name"], private_hex=o["private_hex"],

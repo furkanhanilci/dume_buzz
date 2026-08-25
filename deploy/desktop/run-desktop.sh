@@ -49,6 +49,6 @@ docker run -d --name "$NAME" \
   --entrypoint /bin/bash \
   "$IMAGE" -c "mkdir -p /tmp/runtime && chmod 700 /tmp/runtime && exec /opt/buzz/AppRun $(printf '%q' "${DEEPLINK:-}")" >/dev/null
 
-echo "Buzz Desktop starting — relay: http://127.0.0.1:3100"
+echo "Buzz Desktop starting — relay: http://100.104.142.19:3100"
 echo "  logs:   ./run-desktop.sh logs"
 echo "  stop:   ./run-desktop.sh stop"

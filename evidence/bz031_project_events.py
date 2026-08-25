@@ -9,7 +9,7 @@ sys.path.insert(0, '/home/otonom/Desktop/FH/DUM-E')
 from dume.collaboration.buzz import (
     Identity, BuzzClient, SPACE_CHANNELS, load_identity, role_identity)
 
-BASE = "http://127.0.0.1:3100"
+BASE = "http://100.104.142.19:3100"
 STORE = pathlib.Path('/home/otonom/Desktop/FH/Buzz_Dume/secrets/roles.json')
 OPERATOR = sys.argv[1]
 

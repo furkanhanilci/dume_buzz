@@ -212,3 +212,69 @@ behaviour, and a difference from the older pin worth carrying into BZ-009.
 | Communities | `127.0.0.1`, `localhost` |
 | Desktop | running, joined, operator signed in |
 | Unrelated stack on :3000 | untouched throughout |
+
+---
+
+# Session 3 — one address for every client
+
+## The finding
+
+Mobile pairing failed with *"could not reach the pairing relay"* — the exact
+failure `dume/collaboration/host.py` documents: a QR carrying `localhost` is
+correct for the machine that printed it and wrong for the phone reading it,
+and the error names the relay rather than the address.
+
+Underneath it was something larger. The relay is **multi-tenant and keys a
+community by `host:port`, with no alias support** (searched the stable source
+for one). Verified in the schema: `communities.host` is the only place the host
+string lives; 45 other tables key on `community_id`. So two addresses mean two
+workspaces, and a phone reaching a different address would have found an empty
+one.
+
+At that point there were three communities and all 15 channels sat in one:
+
+| host | channels |
+|---|---|
+| `127.0.0.1:3100` | 15 |
+| `127.0.0.1` | 0 |
+| `localhost` | 0 |
+
+The two empty rows were mine — provisioned without a port, which normalises to
+a different tenant than the one the relay creates at boot.
+
+## The move
+
+Everything now answers on the tailnet address, which is the only one reachable
+from the Desktop, a phone, and the deployment machine alike:
+
+```
+BUZZ_DOMAIN=100.104.142.19
+RELAY_URL=ws://100.104.142.19:3100
+BUZZ_MEDIA_BASE_URL=http://100.104.142.19:3100/media
+RELAY_OPERATOR_API_ORIGIN=http://100.104.142.19:3100
+BUZZ_CORS_ORIGINS=…tailnet, loopback, LAN, tauri://localhost
+```
+
+Done entirely through supported APIs — the operator control plane provisions
+the host, then DUM-E's own bootstrap re-asserts its channels and roles. No
+schema surgery, so nothing depends on a hand-edited row surviving an upgrade.
+Channel ids are `uuid5` derivations, so they came across unchanged.
+
+Re-verified against the new host by querying the relay:
+
+| | |
+|---|---|
+| distinct identities | 7/7 |
+| profiles published | 7/7 |
+| kind-10100 directory entries | 7/7 |
+| standing channels | 11 |
+| verifier excluded from `dume-implementation` | yes |
+| implementer excluded from `dume-verification` | yes |
+
+The Desktop rejoined by invite deep link and its Settings → Mobile page now
+prints a pairing QR carrying a reachable address.
+
+Cost: three channels the Desktop had created on the old host (`general`,
+`Welcome`, `welcome-everyone`) and an hour of test messages did not come
+across. No commissioning record was involved — DUM-E's authority has never
+lived in Buzz.
