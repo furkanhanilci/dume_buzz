@@ -283,8 +283,12 @@ footer{
         <tr><td>architect</td><td class="mono">qwen-local</td><td>qwen</td><td class="mono">1</td><td>local, GPU 0</td></tr>
         <tr><td>implementer</td><td class="mono">qwen-local</td><td>qwen</td><td class="mono">1</td><td>local, GPU 0</td></tr>
         <tr><td>spec reviewer</td><td class="mono">mistral-local</td><td>mistral</td><td class="mono">2</td><td>local, GPU 1</td></tr>
-        <tr><td>code reviewer</td><td class="mono">claude-sonnet-5</td><td>claude</td><td class="mono">2</td><td>Claude Code CLI</td></tr>
+        <tr><td>code reviewer</td><td class="mono">claude-sonnet-5</td><td>claude</td><td class="mono">2</td><td>Claude CLI</td></tr>
         <tr><td>verifier</td><td class="mono">codex-terra</td><td>gpt</td><td class="mono">3</td><td>Codex CLI</td></tr>
+        <tr><td colspan="5" style="padding-top:14px"><strong>Held back for the hard decisions</strong> — <code>reserve</code> keeps a runtime out of routine work, and on the work it admits, the role that work turns on takes it first.</td></tr>
+        <tr><td>architect · <span class="mono">ARCHITECTURE_CRITICAL</span></td><td class="mono">codex-sol</td><td>gpt</td><td class="mono">4</td><td>reserved</td></tr>
+        <tr><td>spec reviewer · <span class="mono">SPEC_CONFLICT</span></td><td class="mono">codex-sol</td><td>gpt</td><td class="mono">4</td><td>reserved</td></tr>
+        <tr><td>verifier · <span class="mono">HIGH_RISK_REVIEW</span></td><td class="mono">claude-fable-5</td><td>claude</td><td class="mono">5</td><td>reserved</td></tr>
       </tbody>
     </table>
   </div>
@@ -389,11 +393,12 @@ python3 -m dume.cli command "show WP-003" --actor otonom</code></pre>
       <tbody>
         <tr><td>Relay</td><td class="mono">wss://otonom-cluster-0.taile59b41.ts.net</td><td><span class="chip live">live</span></td></tr>
         <tr><td>Pairing relay</td><td class="mono">wss://…:5443</td><td><span class="chip live">live</span></td></tr>
-        <tr><td><span class="mono">@architect</span></td><td>control · implementation</td><td><span class="chip live">online</span></td></tr>
-        <tr><td><span class="mono">@implementer</span></td><td>implementation</td><td><span class="chip live">online</span></td></tr>
-        <tr><td><span class="mono">@spec-reviewer</span></td><td>review</td><td><span class="chip live">online</span></td></tr>
-        <tr><td><span class="mono">@code-reviewer</span></td><td>review</td><td><span class="chip meas">executor</span></td></tr>
-        <tr><td><span class="mono">@verifier</span></td><td>verification</td><td><span class="chip meas">executor</span></td></tr>
+        <tr><td><span class="mono">@DUM-E Architect</span></td><td>control · implementation · qwen</td><td><span class="chip live">online</span></td></tr>
+        <tr><td><span class="mono">@DUM-E Implementer</span></td><td>implementation · qwen</td><td><span class="chip live">online</span></td></tr>
+        <tr><td><span class="mono">@DUM-E Spec Reviewer</span></td><td>review · claude</td><td><span class="chip live">online</span></td></tr>
+        <tr><td><span class="mono">@DUM-E Code Reviewer</span></td><td>review · claude</td><td><span class="chip live">online</span></td></tr>
+        <tr><td><span class="mono">@DUM-E Verifier</span></td><td>verification · gpt-5.6</td><td><span class="chip live">online</span></td></tr>
+        <tr><td><span class="mono">@DUM-E</span></td><td>general — answers, or asks a role</td><td><span class="chip live">online</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -401,7 +406,11 @@ python3 -m dume.cli command "show WP-003" --actor otonom</code></pre>
 <pre><code>cd deploy/dume-agents
 ./run-agents.sh start | status | logs &lt;role&gt;</code></pre>
     <p>One process per role, each with its own key. A single <code>buzz-acp --agents N</code> pool shares one Nostr identity, so it can never stand in for roles that must be independent.</p>
-    <div class="note"><span class="chip meas">executor</span> means the role runs through DUM-E's own executor rather than ACP: the Claude Code and Codex adapters require an API key, and these CLIs hold subscriptions. A mixed per-role outcome is expected, not a shortfall.</div>
+    <div class="note">Both ACP adapters were assumed to need an API key and neither does: <code>claude-agent-acp</code> reuses the Claude CLI's session, and <code>codex-acp</code> opens one on the ChatGPT subscription. What actually limits the channel is different — buzz-acp does not publish a reply itself, the agent posts by running the Buzz CLI, and <strong>Mistral answers in a few tokens without ever sending</strong>. It is silent here and unaffected in the pipeline.</div>
+    <h3>When a runtime runs out</h3>
+    <p>Quota is not a property of the work. <code>quota-watch.py</code> reports exhaustion to the registry and asks DUM-E's binder what the role gets instead — it never picks the replacement, and when nothing eligible is left the role waits rather than taking whatever remains.</p>
+<pre><code>./quota-watch.py              <span class="cmt"># one pass</span>
+./quota-watch.py --watch 60   <span class="cmt"># keep checking</span></code></pre>
   </div>
 </section>
 
