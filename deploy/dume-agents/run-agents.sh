@@ -24,7 +24,12 @@ print(','.join([o['pubkey'], d['dume_orchestrator']['pubkey']]))")"
 SECRETS="$PWD/../../secrets"
 APP="$PWD/../desktop/squashfs-root"
 IMAGE=dume-agent:0.5.18
-CLAUDE_ROLES="commissioning_orchestrator spec_reviewer code_reviewer verifier"
+CLAUDE_ROLES="commissioning_orchestrator spec_reviewer code_reviewer"
+# codex-acp 1.6.2 offers a chat-gpt auth method and opens a session on the
+# CLI's subscription — the note that it demands an OPENAI_API_KEY was true
+# of an older build. Keeping the verifier on gpt also keeps three families
+# in the channel rather than one.
+CODEX_ROLES="verifier"
 
 # Endpoints for the local families, by runtime id.
 declare -A ENDPOINT=(
@@ -58,6 +63,37 @@ for role in $(roles); do
   # ChatGPT subscription. claude-agent-acp needs no key, so the reviewer roles
   # speak through it.
   case " $CLAUDE_ROLES " in *" $role "*) USE_CLAUDE=1 ;; *) USE_CLAUDE=0 ;; esac
+  case " $CODEX_ROLES " in *" $role "*) USE_CODEX=1 ;; *) USE_CODEX=0 ;; esac
+  if [ "$USE_CODEX" = "1" ]; then
+    docker rm -f "dume-agent-$role" >/dev/null 2>&1 || true
+    mkdir -p "$PWD/work/$role"
+    docker run -d --name "dume-agent-$role" \
+      --network host \
+      -e PATH=/opt/node/bin:/opt/buzz/usr/bin:/opt/codex/bin:/usr/local/bin:/usr/bin:/bin \
+      -e HOME=/home/ubuntu \
+      -e BUZZ_PRIVATE_KEY="$(key "$role")" \
+      -e BUZZ_RELAY_URL="$RELAY" \
+      -v "$HOME/.hermes/node:/opt/node:ro" \
+      -v "$APP:/opt/buzz:ro" \
+      -v "$PWD/prompts:/prompts:ro" \
+      -v "$PWD/acp:/opt/acp:ro" \
+      -v "$HOME/.codex:/home/ubuntu/.codex" \
+      -v "$PWD/work/$role:/home/ubuntu/.buzz" \
+      "$IMAGE" \
+        --relay-url "$RELAY" \
+        --private-key "$(key "$role")" \
+        --agent-owner "$OWNER_PUBKEY" \
+        --respond-to allowlist \
+        --respond-to-allowlist "$ALLOWLIST" \
+        --agent-command /opt/acp/node_modules/.bin/codex-acp \
+        --agent-args "" \
+        --channels "$(channels "$role")" \
+        --system-prompt-file "/prompts/$role.md" \
+        --dedup queue \
+      >/dev/null
+    echo "  $role → codex / gpt-5.6 (ChatGPT subscription) : started"
+    continue
+  fi
   if [ "$USE_CLAUDE" = "1" ]; then
     docker rm -f "dume-agent-$role" >/dev/null 2>&1 || true
     mkdir -p "$PWD/work/$role"
