@@ -24,6 +24,7 @@ print(','.join([o['pubkey'], d['dume_orchestrator']['pubkey']]))")"
 SECRETS="$PWD/../../secrets"
 APP="$PWD/../desktop/squashfs-root"
 IMAGE=dume-agent:0.5.18
+CLAUDE_ROLES="commissioning_orchestrator spec_reviewer code_reviewer verifier"
 
 # Endpoints for the local families, by runtime id.
 declare -A ENDPOINT=(
@@ -51,12 +52,58 @@ for role in $(roles); do
   runtime=$(field "$role" runtime_id)
   endpoint="${ENDPOINT[$runtime]:-}"
 
+  # Only two families can speak in a channel. Qwen calls the tool that posts;
+  # Mistral answers in seven tokens and never sends, so it is silent here. Codex
+  # cannot run at all — codex-acp wants an OPENAI_API_KEY and this host holds a
+  # ChatGPT subscription. claude-agent-acp needs no key, so the reviewer roles
+  # speak through it.
+  case " $CLAUDE_ROLES " in *" $role "*) USE_CLAUDE=1 ;; *) USE_CLAUDE=0 ;; esac
+  if [ "$USE_CLAUDE" = "1" ]; then
+    docker rm -f "dume-agent-$role" >/dev/null 2>&1 || true
+    mkdir -p "$PWD/work/$role"
+    docker run -d --name "dume-agent-$role" \
+      --network host \
+      `# ubuntu:24.04 ships Node 18 and the adapter needs newer, so the host
+       # install is mounted and put first on PATH. It wants GLIBC_2.28; the
+       # image provides 2.39.` \
+      -e PATH=/opt/node/bin:/opt/buzz/usr/bin:/opt/claude/bin:/usr/local/bin:/usr/bin:/bin \
+      -e HOME=/home/ubuntu \
+      `# The agent posts its reply by running the Buzz CLI, which signs with its
+       # own identity. buzz-agent inherits these from the harness; this adapter
+       # is a separate process tree and does not, so its first send failed with
+       # auth_error and the answer sat unposted.` \
+      -e BUZZ_PRIVATE_KEY="$(key "$role")" \
+      -e BUZZ_RELAY_URL="$RELAY" \
+      -v "$HOME/.hermes/node:/opt/node:ro" \
+      -v "$APP:/opt/buzz:ro" \
+      -v "$PWD/prompts:/prompts:ro" \
+      -v "$PWD/acp:/opt/acp:ro" \
+      -v "$HOME/.local/share/claude:/opt/claude/share:ro" \
+      -v "$HOME/.local/bin/claude:/opt/claude/bin/claude:ro" \
+      -v "$HOME/.claude:/home/ubuntu/.claude" \
+      -v "$PWD/work/$role:/home/ubuntu/.buzz" \
+      "$IMAGE" \
+        --relay-url "$RELAY" \
+        --private-key "$(key "$role")" \
+        --agent-owner "$OWNER_PUBKEY" \
+        --respond-to allowlist \
+        --respond-to-allowlist "$ALLOWLIST" \
+        --agent-command /opt/acp/node_modules/.bin/claude-agent-acp \
+        --agent-args "" \
+        --channels "$(channels "$role")" \
+        --system-prompt-file "/prompts/$role.md" \
+        --dedup queue \
+      >/dev/null
+    echo "  $role → claude (CLI subscription, no API key) : started"
+    continue
+  fi
+
   if [ -z "$endpoint" ]; then
-    # claude-* and codex-* reach their provider through a CLI signed in with a
-    # subscription. The ACP adapters (codex-acp, claude-agent-acp) require an
-    # API key instead, which this host does not hold, so these roles stay on
-    # DUM-E's own executor. The pack allows exactly this: "a mixed per-role
-    # outcome is valid."
+    # codex-acp wants an OPENAI_API_KEY and this host holds a ChatGPT
+    # subscription, so codex roles stay on DUM-E's own executor. claude-agent-acp
+    # turned out to need no key at all — it reports apiType=native and reuses the
+    # CLI's session — so the front desk runs on it above. The pack allows the
+    # split: "a mixed per-role outcome is valid."
     echo "  $role → $runtime : DUM-E executor (no ACP adapter without an API key)"
     continue
   fi

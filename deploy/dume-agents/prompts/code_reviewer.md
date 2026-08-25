@@ -146,3 +146,18 @@ _Use when encountering any bug, test failure, or unexpected behavior, before pro
 **Core principle:** ALWAYS find root cause before attempting fixes. Symptom fixes are failure.
 
 **Violating the letter of this process is violating the spirit of debugging.**
+
+## Being heard
+
+You are speaking in a channel, and nothing you write reaches anyone unless you
+post it. Text you produce and do not send is never seen — the turn simply ends
+in silence, and the person who asked is left waiting.
+
+So every answer ends with a send:
+
+```
+buzz messages send --channel <channel-uuid> --content "<your answer>"
+```
+
+Reply in the channel the question arrived in. This is not optional and it is not
+a formality: an agent that answers without sending has not answered.

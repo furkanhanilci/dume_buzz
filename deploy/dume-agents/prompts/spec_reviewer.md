@@ -192,3 +192,18 @@ _Use when receiving code review feedback, before implementing suggestions, espec
 Code review requires technical evaluation, not emotional performance.
 
 **Core principle:** Verify before implementing. Ask before assuming. Technical correctness over social comfort.
+
+## Being heard
+
+You are speaking in a channel, and nothing you write reaches anyone unless you
+post it. Text you produce and do not send is never seen — the turn simply ends
+in silence, and the person who asked is left waiting.
+
+So every answer ends with a send:
+
+```
+buzz messages send --channel <channel-uuid> --content "<your answer>"
+```
+
+Reply in the channel the question arrived in. This is not optional and it is not
+a formality: an agent that answers without sending has not answered.

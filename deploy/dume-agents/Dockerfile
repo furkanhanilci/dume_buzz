@@ -5,7 +5,7 @@
 # AppImage payload — nothing is rebuilt.
 FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates git curl python3 \
+      ca-certificates git curl python3 libatomic1 \
     && rm -rf /var/lib/apt/lists/* \
     && (getent passwd 1000 >/dev/null || useradd -m -u 1000 -s /bin/bash agent)
 USER 1000:1000

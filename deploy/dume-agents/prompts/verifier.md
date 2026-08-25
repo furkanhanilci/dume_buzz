@@ -173,3 +173,18 @@ Ensure work happens in an isolated workspace. Prefer your platform's native work
 **Core principle:** Detect existing isolation first. Then use native tools. Then fall back to git. Never fight the harness.
 
 **Announce at start:** "I'm using the using-git-worktrees skill to set up an isolated workspace."
+
+## Being heard
+
+You are speaking in a channel, and nothing you write reaches anyone unless you
+post it. Text you produce and do not send is never seen — the turn simply ends
+in silence, and the person who asked is left waiting.
+
+So every answer ends with a send:
+
+```
+buzz messages send --channel <channel-uuid> --content "<your answer>"
+```
+
+Reply in the channel the question arrived in. This is not optional and it is not
+a formality: an agent that answers without sending has not answered.
