@@ -126,3 +126,89 @@ not a rewrite — which is what the pack predicted.
 
 - The trashed commissioning pack and `AETHRION_BUILD` — awaiting the owner's decision. Blocks BZ-001 acceptance; blocks nothing in the Buzz foundation.
 - BZ-007's human client. The Desktop AppImage path is closed on this host (glibc 2.35 vs 2.39). The relay does serve a bundled web UI (`BUZZ_WEB_DIR=/srv/buzz/web`), but it is not mounted at `/`, `/app` or `/index.html`. Route not yet located.
+
+---
+
+# Session 2 — human client and native team
+
+## BZ-007 — official Buzz Desktop v0.5.18, running
+
+The Desktop is the official published AppImage, unmodified and unrebuilt
+(`md5 fdaff5927292812ee2462d3aad5079da`, identical to the copy downloaded by
+hand from the release page). It cannot run natively on this host:
+
+```
+$ ./Buzz_0.5.18_amd64.AppImage
+buzz-desktop: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.38' not found
+buzz-desktop: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.39' not found
+```
+
+`objdump -T` on the bundled binaries requires `GLIBC_2.39`; this host provides
+2.35. Upstream builds the Linux desktop bundle inside
+`container: ubuntu:24.04@sha256:4fbb8e6a…` (release.yml, `release-linux` job),
+so the requirement is the release's, not a local misconfiguration. ADR-0005
+predicted this for an earlier version; it is now measured for 0.5.18 exactly.
+
+**Resolution:** the official payload runs against the same base image upstream
+builds it in. Nothing is patched or recompiled. `deploy/desktop/run-desktop.sh`
+plus a host `.desktop` entry that also owns `x-scheme-handler/buzz`.
+
+Three things had to be right, and each was found by measurement:
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| window opens, renders blank white | `WEBKIT_DISABLE_COMPOSITING_MODE` overridden at runtime | let the image's WebKit env stand; only `WEBKIT_DMABUF_RENDERER_FORCE_SHM=1` is set |
+| every request 404s, "no community is configured for this host" | the relay is multi-tenant and had no community row | `POST /operator/communities` under `RELAY_OPERATOR_PUBKEYS` |
+| "Waiting for your browser…" forever on *Create a community* | that path is Builderlab, Block's hosted service | self-hosted joins by invite deep link instead |
+| `join deep link missing/invalid relay or code` | `relay=` must be the **WebSocket** URL | `buzz://join?relay=ws%3A%2F%2F127.0.0.1%3A3100&code=…` |
+
+The deep-link format is not guessed — it is what the relay's own invite landing
+page constructs: `window.location.protocol === 'https:' ? 'wss:' : 'ws:'`.
+
+Also recorded: the AppImage ships **prebuilt `buzz-acp`, `buzz-agent`,
+`buzz-dev-mcp`, `buzz` CLI and `git-credential-nostr`**. BZ-034/BZ-037 may not
+need the 6–9 GiB cargo build ADR-0005 costed, which matters on a root
+filesystem with 18 GiB free.
+
+## BZ-013/014/016/017/021/024 — DUM-E as a native verified team
+
+Seven distinct identities, each a relay member admitted by the owner, each with
+a published profile and a kind-10100 directory announcement:
+
+| | pubkey |
+|---|---|
+| DUM-E (application) | `afeeb26e0f02ec84` |
+| commissioning orchestrator | `04da3f4e9ce69e69` |
+| architect | `f8a417b95fed783b` |
+| implementer | `89d30b5055b085a1` |
+| spec reviewer | `a8ce2e6533c6c9c4` |
+| code reviewer | `aea63258f695062e` |
+| verifier | `9727edc89c6a5534` |
+
+Verified by querying the relay rather than trusting the bootstrap's return
+value — see `../evidence/bz017_verify.py`.
+
+**Gap found in current DUM-E:** `ensure_roles()` calls
+`load_identity(path, "dume_orchestrator")` before anything creates that entry,
+so on a fresh relay and a fresh key store the application identity silently
+fails with *"no identity store"* while all six roles succeed. It worked
+previously only because the store already held the entry. This is BZ-013's
+subject and is recorded rather than patched in place.
+
+Eleven standing channels exist with discovery events (39000/39001/39002 —
+`buzz-admin reconcile-channels` reports 15/15 already present). The human
+operator is seated in all eleven as admin; the role identities are seated by
+the independence rule, so **the verifier is not in `dume-implementation`**.
+
+`ensure_spaces()` cannot seat the operator when the operator *is* the channel
+owner: the relay refuses with `cannot demote the last owner`. Correct relay
+behaviour, and a difference from the older pin worth carrying into BZ-009.
+
+## State
+
+| | |
+|---|---|
+| Official relay | `http://127.0.0.1:3100`, healthy |
+| Communities | `127.0.0.1`, `localhost` |
+| Desktop | running, joined, operator signed in |
+| Unrelated stack on :3000 | untouched throughout |

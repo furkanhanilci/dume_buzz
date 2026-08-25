@@ -4,3 +4,10 @@ deploy/official-buzz/.env
 
 # Upstream is a blobless clone, re-fetchable from its recorded ref.
 upstream/
+
+# Desktop payload: the official AppImage and its extraction, plus app data.
+# 170 MB binary + 292 MB of downloaded voice models — re-fetchable, not source.
+deploy/desktop/*.AppImage
+deploy/desktop/squashfs-root/
+deploy/desktop/appdata/
+deploy/desktop/assets.html

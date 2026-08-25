@@ -1,0 +1,35 @@
+# Official Buzz Desktop needs glibc 2.38/2.39; this host is Ubuntu 22.04 (2.35).
+# The app is not rebuilt or modified — the official AppImage payload is mounted
+# in and run against the runtime it was actually built for (ubuntu:24.04, the
+# same base the release job pins).
+FROM ubuntu:24.04
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libwebkit2gtk-4.1-0 \
+      libgtk-3-0 \
+      libayatana-appindicator3-1 \
+      librsvg2-2 \
+      libssl3 \
+      libasound2t64 \
+      libgl1-mesa-dri \
+      libglx-mesa0 \
+      libegl1 \
+      ca-certificates \
+      fonts-dejavu-core \
+      xdg-utils \
+      dbus-x11 \
+    && rm -rf /var/lib/apt/lists/* \
+    && (getent passwd 1000 >/dev/null || useradd -m -u 1000 -s /bin/bash buzz)
+
+# WebKitGTK's accelerated compositing crashes on the proprietary NVIDIA driver
+# (the blocker ADR-0005 recorded). Software rendering avoids it; the UI is a
+# chat client, not a game.
+ENV WEBKIT_DISABLE_COMPOSITING_MODE=1 \
+    WEBKIT_DISABLE_DMABUF_RENDERER=1 \
+    LIBGL_ALWAYS_SOFTWARE=1 \
+    GDK_BACKEND=x11 \
+    XDG_RUNTIME_DIR=/tmp/runtime
+
+USER 1000:1000
+WORKDIR /opt/buzz
+ENTRYPOINT ["/opt/buzz/AppRun"]
