@@ -101,8 +101,7 @@
       "model": "/models/Qwen3.8-27B-UD-Q4_K_M.gguf",
       "provider": "local",
       "channels": {
-        "DUM-E \u00b7 general": "1f2e0764-57ce-5f87-a6a6-ce4195f9d103",
-        "dume-control": "5e3a4c17-05fc-51df-8a0e-18d0d5bb2119"
+        "DUM-E \u00b7 general": "1f2e0764-57ce-5f87-a6a6-ce4195f9d103"
       },
       "independent_of": [],
       "family_independent_of": []
