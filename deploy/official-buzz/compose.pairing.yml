@@ -1,0 +1,28 @@
+# Device pairing relay.
+#
+# The relay image ships buzz-pair-relay but the relay does not start it — it is
+# a separate service, and the official single-node compose bundle omits it. With
+# nothing listening, a phone scanning the QR reports "could not reach the
+# pairing relay", which names the relay rather than the missing service.
+#
+# It also defaults to 127.0.0.1:5000, so it is bound to every interface here and
+# the port published; BUZZ_PAIRING_RELAY_URL tells the relay which public
+# address to put in the QR.
+services:
+  relay:
+    environment:
+      BUZZ_PAIRING_RELAY_URL: ${BUZZ_PAIRING_RELAY_URL:?set BUZZ_PAIRING_RELAY_URL}
+
+  pair-relay:
+    image: ${BUZZ_IMAGE:-ghcr.io/block/buzz:main}
+    entrypoint: ["/usr/local/bin/buzz-pair-relay"]
+    env_file:
+      - .env
+    environment:
+      BUZZ_PAIR_RELAY_BIND_ADDR: 0.0.0.0:5000
+      RUST_LOG: ${RUST_LOG:-info}
+    ports:
+      - "${BUZZ_PAIR_PORT:-5000}:5000"
+    restart: unless-stopped
+    networks:
+      - buzz-net

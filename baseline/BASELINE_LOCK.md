@@ -278,3 +278,64 @@ Cost: three channels the Desktop had created on the old host (`general`,
 `Welcome`, `welcome-everyone`) and an hour of test messages did not come
 across. No commissioning record was involved — DUM-E's authority has never
 lived in Buzz.
+
+---
+
+# Session 4 — device pairing
+
+## The finding
+
+Mobile pairing failed with *"could not reach the pairing relay"* even after the
+whole deployment moved onto a reachable address. The address was not the cause.
+
+**The official single-node compose bundle never starts `buzz-pair-relay`.** The
+binary ships inside the relay image (`/usr/local/bin/buzz-pair-relay`, next to
+`buzz-relay` and `buzz-admin`), but the relay does not spawn it and
+`deploy/compose/compose.yml` declares no service for it. Nothing was listening,
+so the phone was right and the message was misleading — it names the relay
+rather than the service that is absent.
+
+Two further defaults compounded it:
+
+- `BUZZ_PAIR_RELAY_BIND_ADDR` defaults to `127.0.0.1:5000` — inside a container
+  that is reachable from nothing.
+- `BUZZ_PAIRING_RELAY_URL` (*"Public WebSocket URL of the dedicated
+  device-pairing relay, when configured"*) was unset, so the relay advertised no
+  pairing address at all.
+
+## The fix
+
+`deploy/official-buzz/compose.pairing.yml` — an overlay, leaving the upstream
+compose file untouched:
+
+```yaml
+pair-relay:
+  image: ${BUZZ_IMAGE}
+  entrypoint: ["/usr/local/bin/buzz-pair-relay"]
+  environment:
+    BUZZ_PAIR_RELAY_BIND_ADDR: 0.0.0.0:5000
+  ports: ["5000:5000"]
+```
+
+plus `BUZZ_PAIRING_RELAY_URL=ws://100.104.142.19:5000` on the relay.
+
+Verified rather than assumed:
+
+| check | result |
+|---|---|
+| `buzz-pair-relay` log | `listening on 0.0.0.0:5000` |
+| TCP from tailnet / LAN / loopback | open on all three |
+| WebSocket upgrade from the tailnet address | `HTTP/1.1 101 Switching Protocols` |
+| relay NIP-11 `pairing_relay_url` | `ws://100.104.142.19:5000` |
+
+## Still open
+
+`agent Fizz not ready — spawning in setup-listener mode`. The three built-in
+agents (Fizz, Honey, Pollen) are provisioned with keys and were pointed at the
+local Qwen over its OpenAI-compatible endpoint — `buzz-agent` no longer exits on
+missing configuration, and `buzz-acp`/`buzz-agent`/`buzz-dev-mcp` are on the
+app's PATH. Something else still gates readiness; not yet identified.
+
+Note: this is the operator's own Buzz agent runtime. It is **not** DUM-E runtime
+policy, which stays with the DUM-E router (BZ-042) and is unaffected by anything
+set in the Desktop.

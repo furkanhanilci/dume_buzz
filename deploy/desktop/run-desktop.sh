@@ -39,6 +39,11 @@ docker run -d --name "$NAME" \
   -e WEBKIT_DMABUF_RENDERER_FORCE_SHM=1 \
   -e LIBGL_ALWAYS_SOFTWARE=1 \
   -e GDK_BACKEND=x11 \
+  -e PATH=/opt/buzz/usr/bin:/usr/local/bin:/usr/bin:/bin \
+  -e BUZZ_AGENT_PROVIDER=openai \
+  -e OPENAI_COMPAT_BASE_URL=http://127.0.0.1:8000/v1 \
+  -e OPENAI_COMPAT_API_KEY=local-no-auth \
+  -e OPENAI_COMPAT_MODEL=/models/Qwen3.8-27B-UD-Q4_K_M.gguf \
   -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
   -v "$HOME/.Xauthority:/home/ubuntu/.Xauthority:ro" \
   -v "$APP:/opt/buzz:ro" \
