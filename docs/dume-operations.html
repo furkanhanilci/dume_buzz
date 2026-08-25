@@ -1,0 +1,437 @@
+<title>DUM-E Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#FBFBF8;
+  --raised:#F3F4F0;
+  --ink:#161A18;
+  --muted:#5C655F;
+  --faint:#8A928C;
+  --rule:#DCDFD8;
+  --accent:#1E6B58;
+  --accent-soft:#E3EFEA;
+  --signal:#9A6412;
+  --signal-soft:#F5EBDA;
+  --refuse:#9C3626;
+  --refuse-soft:#F6E4E0;
+  --code-bg:#EEF0EA;
+
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1211;
+    --raised:#171B19;
+    --ink:#E8EBE6;
+    --muted:#9BA49D;
+    --faint:#6E7872;
+    --rule:#252A27;
+    --accent:#6DC4A8;
+    --accent-soft:#14261F;
+    --signal:#D9A155;
+    --signal-soft:#2A2114;
+    --refuse:#E08872;
+    --refuse-soft:#2B1815;
+    --code-bg:#151917;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F1211;
+  --raised:#171B19;
+  --ink:#E8EBE6;
+  --muted:#9BA49D;
+  --faint:#6E7872;
+  --rule:#252A27;
+  --accent:#6DC4A8;
+  --accent-soft:#14261F;
+  --signal:#D9A155;
+  --signal-soft:#2A2114;
+  --refuse:#E08872;
+  --refuse-soft:#2B1815;
+  --code-bg:#151917;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px 120px}
+.col{max-width:66ch}
+
+/* ---- masthead ---------------------------------------------------- */
+header.mast{
+  border-bottom:1px solid var(--rule);
+  padding:64px 0 34px;
+  margin-bottom:52px;
+}
+.kicker{
+  font-family:var(--f-mono);
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin:0 0 18px;
+}
+h1{
+  font-family:var(--f-display);
+  font-weight:700;
+  font-size:clamp(2.3rem,5.2vw,3.4rem);
+  line-height:1.04;
+  letter-spacing:-.022em;
+  margin:0 0 20px;
+  text-wrap:balance;
+}
+.standfirst{
+  font-size:1.16rem;
+  color:var(--muted);
+  margin:0;
+  max-width:60ch;
+}
+
+/* ---- sections ---------------------------------------------------- */
+section{padding-top:52px}
+.eyebrow{
+  display:inline-block;
+  font-family:var(--f-mono);
+  font-size:10.5px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:var(--faint);
+  border-top:2px solid var(--rule);
+  padding-top:7px;
+  margin:0 0 14px;
+}
+h2{
+  font-family:var(--f-display);
+  font-weight:600;
+  font-size:clamp(1.45rem,2.8vw,1.9rem);
+  letter-spacing:-.014em;
+  line-height:1.2;
+  margin:0 0 16px;
+  text-wrap:balance;
+}
+h3{
+  font-family:var(--f-display);
+  font-weight:600;
+  font-size:1.06rem;
+  letter-spacing:-.005em;
+  margin:32px 0 10px;
+}
+p{margin:0 0 17px}
+a{color:var(--accent)}
+
+/* ---- the invariant ----------------------------------------------- */
+.invariant{
+  border:1px solid var(--accent);
+  background:var(--accent-soft);
+  border-radius:2px;
+  padding:26px 28px;
+  margin:8px 0 4px;
+}
+.invariant p{margin:0;font-size:1.13rem}
+.invariant strong{font-weight:600}
+
+/* ---- pipeline (a real sequence, so it is numbered) --------------- */
+ol.pipe{
+  list-style:none;
+  counter-reset:step;
+  margin:22px 0 0;
+  padding:0;
+  display:grid;
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  border-radius:2px;
+  overflow:hidden;
+}
+ol.pipe li{
+  counter-increment:step;
+  background:var(--ground);
+  padding:14px 18px 14px 56px;
+  position:relative;
+}
+ol.pipe li::before{
+  content:counter(step,decimal-leading-zero);
+  position:absolute;left:18px;top:15px;
+  font-family:var(--f-mono);font-size:11px;
+  color:var(--accent);letter-spacing:.06em;
+}
+ol.pipe .stage{font-family:var(--f-display);font-weight:600;font-size:.95rem}
+ol.pipe .what{color:var(--muted);font-size:.93rem}
+
+/* ---- tables ------------------------------------------------------ */
+.scroll{overflow-x:auto;margin:22px 0;border:1px solid var(--rule);border-radius:2px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:520px}
+th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--faint);font-weight:500;
+  background:var(--raised);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none}
+td.mono,th.mono{font-family:var(--f-mono);font-size:.83rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* ---- state chips ------------------------------------------------- */
+.chip{
+  display:inline-block;font-family:var(--f-mono);font-size:10px;
+  letter-spacing:.09em;text-transform:uppercase;
+  padding:2.5px 7px;border-radius:2px;white-space:nowrap;
+}
+.chip.live{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+.chip.meas{background:var(--signal-soft);color:var(--signal);border:1px solid var(--signal)}
+.chip.block{background:var(--refuse-soft);color:var(--refuse);border:1px solid var(--refuse)}
+
+/* ---- code -------------------------------------------------------- */
+pre{
+  background:var(--code-bg);
+  border:1px solid var(--rule);
+  border-radius:2px;
+  padding:15px 17px;
+  overflow-x:auto;
+  margin:18px 0;
+  font-family:var(--f-mono);
+  font-size:.83rem;
+  line-height:1.6;
+}
+code{font-family:var(--f-mono);font-size:.86em;background:var(--code-bg);padding:1px 4px;border-radius:2px}
+pre code{background:none;padding:0;font-size:1em}
+.cmt{color:var(--faint)}
+
+/* ---- callout ----------------------------------------------------- */
+.note{
+  border-left:2px solid var(--signal);
+  padding:2px 0 2px 18px;
+  margin:22px 0;
+  color:var(--muted);
+  font-size:.96rem;
+}
+.note strong{color:var(--ink);font-weight:600}
+
+footer{
+  margin-top:76px;padding-top:22px;border-top:1px solid var(--rule);
+  font-family:var(--f-mono);font-size:11px;color:var(--faint);
+  display:flex;flex-wrap:wrap;gap:8px 22px;
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <p class="kicker">Commissioning harness · operations</p>
+  <h1>DUM-E Operations</h1>
+  <p class="standfirst">How to run the harness that builds AETHRION — the pipeline, the runtimes it is allowed to use, and the one thing it will never let you do.</p>
+</header>
+
+<section class="col">
+  <p class="eyebrow">Invariant</p>
+  <h2>What DUM-E is</h2>
+  <p>DUM-E is a commissioning harness. It takes a frozen work package, assembles a cohort of roles, gives each role a runtime it has been measured to be fit for, isolates the work in a worktree, and then refuses to call it done until three independent stages say so.</p>
+  <div class="invariant">
+    <p><strong>Nothing accepts a package on the strength of a claim.</strong> Not a message, not a reaction, not a model saying it passed. Every verdict is recorded through the state store by an identity the store checks for independence, and the gate reads the store.</p>
+  </div>
+  <p style="margin-top:20px">This matters most now that DUM-E is visible inside Buzz. Buzz shows, routes, launches and notifies. It cannot decide that a package passed.</p>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">Sequence</p>
+    <h2>What one run actually does</h2>
+    <p>The order is load-bearing: each stage is gated on the one before it, so a failure names the stage that produced it rather than surfacing at the end.</p>
+  </div>
+  <ol class="pipe">
+    <li><span class="stage">packet</span> — <span class="what">the frozen work package, carried whole rather than summarised</span></li>
+    <li><span class="stage">cohort</span> — <span class="what">which roles this package needs, and what each must not share with the others</span></li>
+    <li><span class="stage">runtime binding</span> — <span class="what">a qualified runtime per role, families kept apart</span></li>
+    <li><span class="stage">worktree</span> — <span class="what">an isolated view; protected paths are unwritable by construction</span></li>
+    <li><span class="stage">plan</span> — <span class="what">the architect's plan, before any code exists</span></li>
+    <li><span class="stage">RED</span> — <span class="what">tests written first, and observed failing</span></li>
+    <li><span class="stage">GREEN</span> — <span class="what">implementation, and the same tests observed passing</span></li>
+    <li><span class="stage">spec review</span> — <span class="what">against the frozen specification, by a different family</span></li>
+    <li><span class="stage">code review</span> — <span class="what">the diff, by a third identity</span></li>
+    <li><span class="stage">fresh verification</span> — <span class="what">a session with no producer history</span></li>
+    <li><span class="stage">gate</span> — <span class="what">deterministic; reads records, not opinions</span></li>
+  </ol>
+  <div class="col">
+    <div class="note"><strong>MERGE_ELIGIBLE is not ACCEPTED.</strong> The machine gate says the work survived every stage. Acceptance is a human and AETHRION decision, recorded separately.</div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">Measured</p>
+    <h2>Runtimes, and why four families</h2>
+    <p>A runtime may hold a role only after it has answered live trials — tool calling, structured output, refusing an unsound claim, admitting uncertainty. Being installed is not qualification; a CLI on PATH says a file exists, a trial says the runtime answered.</p>
+    <p>The binder then spreads the cohort so that no reviewer shares a model family with the implementer. One family cannot review its own work: it shares its own blind spots.</p>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Role</th><th>Runtime</th><th>Family</th><th class="mono">Tier</th><th>Where</th></tr></thead>
+      <tbody>
+        <tr><td>architect</td><td class="mono">qwen-local</td><td>qwen</td><td class="mono">1</td><td>local, GPU 0</td></tr>
+        <tr><td>implementer</td><td class="mono">qwen-local</td><td>qwen</td><td class="mono">1</td><td>local, GPU 0</td></tr>
+        <tr><td>spec reviewer</td><td class="mono">mistral-local</td><td>mistral</td><td class="mono">2</td><td>local, GPU 1</td></tr>
+        <tr><td>code reviewer</td><td class="mono">claude-sonnet-5</td><td>claude</td><td class="mono">2</td><td>Claude Code CLI</td></tr>
+        <tr><td>verifier</td><td class="mono">codex-terra</td><td>gpt</td><td class="mono">3</td><td>Codex CLI</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col">
+    <p>Four distinct families, every independence rule satisfied. To re-derive this binding at any time:</p>
+<pre><code>python3 -m dume.cli runtime --probe        <span class="cmt"># measure what can run here</span>
+python3 -m dume.cli qualify &lt;runtime&gt; --record
+python3 -m dume.cli runtime --bind &lt;role&gt;</code></pre>
+    <div class="note"><strong>Qualification spends real requests.</strong> That is the point — quota and auth cannot be established without it, so a probe alone can only ever answer <code>UNKNOWN</code> for a CLI-backed runtime.</div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">Discipline</p>
+    <h2>Superpowers, per role</h2>
+    <p>Each role is held to a named set of engineering skills, injected whole into its prompt rather than summarised. The revision is pinned and checked against the lockfile on every read.</p>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Role</th><th>Injected whole</th></tr></thead>
+      <tbody>
+        <tr><td>architect</td><td class="mono">brainstorming · writing-plans · writing-skills</td></tr>
+        <tr><td>implementer</td><td class="mono">test-driven-development · systematic-debugging · verification-before-completion · using-git-worktrees</td></tr>
+        <tr><td>spec reviewer</td><td class="mono">verification-before-completion · brainstorming · receiving-code-review</td></tr>
+        <tr><td>code reviewer</td><td class="mono">requesting-code-review · receiving-code-review · systematic-debugging</td></tr>
+        <tr><td>verifier</td><td class="mono">verification-before-completion · systematic-debugging · using-git-worktrees</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col">
+    <div class="note">Injection is an <strong>input</strong>. Whether the discipline was obeyed is answered by the red-then-green exit codes and the independent reviews — never by the presence of a skill file.</div>
+<pre><code>python3 -m dume.cli skills       <span class="cmt"># what each role is held to, and pin drift</span>
+python3 -m dume.cli discipline   <span class="cmt"># prove it was applied on a real run</span></code></pre>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">Operating</p>
+    <h2>Running the harness</h2>
+    <p>Everything is reached through one command line. Each subcommand either reports a measured fact or refuses.</p>
+
+    <h3>Look before you touch</h3>
+<pre><code>python3 -m dume.cli status              <span class="cmt"># every package and its state</span>
+python3 -m dume.cli status --wave 4
+python3 -m dume.cli show WP-003         <span class="cmt"># one package in full</span>
+python3 -m dume.cli history WP-001      <span class="cmt"># every transition, with actors</span>
+python3 -m dume.cli health              <span class="cmt"># is this deployment usable</span></code></pre>
+
+    <h3>Rehearse before you commit</h3>
+<pre><code>python3 -m dume.cli pilot -v            <span class="cmt"># synthetic end-to-end, throwaway state</span>
+python3 -m dume.cli live WP-003         <span class="cmt"># real models, synthetic repo</span>
+python3 -m dume.cli reliability         <span class="cmt"># repeat a live run, report the spread</span>
+python3 -m dume.cli scenarios -v        <span class="cmt"># the adversarial acceptance scenarios</span></code></pre>
+
+    <h3>Commission for real</h3>
+<pre><code>python3 -m dume.cli commission WP-003   <span class="cmt"># real state, real target repo, live models</span>
+python3 -m dume.cli evidence WP-003     <span class="cmt"># what was recorded, and by whom</span></code></pre>
+
+    <div class="note"><strong>An implementing actor cannot accept its own package.</strong> <code>transition</code> takes <code>--actor</code>, and the store refuses a verdict from the identity that produced the candidate. This is the wall a run stops at, and it is not a bug.</div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">Closed grammar</p>
+    <h2>Talking to DUM-E</h2>
+    <p>There is no shell. Every instruction is parsed against a fixed vocabulary and converted into a typed intent — the same path whether it arrives from the terminal or, later, from a Buzz channel.</p>
+<pre><code>python3 -m dume.cli command --vocabulary
+python3 -m dume.cli command "show WP-003" --actor otonom</code></pre>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th class="mono">Class</th><th>Commands</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="mono">READ</td>
+          <td class="mono">status · show · history · evidence · findings · next · open · read · roles · runtimes · spaces · ask · commands</td>
+        </tr>
+        <tr>
+          <td class="mono">CONTROL</td>
+          <td class="mono">commission · pause · challenge · enable · disable · reserve · release</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col">
+    <div class="note">English prose is never a command. <code>PASS</code>, <code>ACCEPTED</code>, <code>MERGE_ELIGIBLE</code>, pasted JSON and reactions create no state anywhere — in the terminal or in a channel.</div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">Live now</p>
+    <h2>DUM-E inside Buzz</h2>
+    <p>The roles are verified Buzz identities, each seated only in the channels its contract allows. The verifier is not a member of the implementation channel — independence is the seating, not a setting.</p>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Surface</th><th>Where</th><th>State</th></tr></thead>
+      <tbody>
+        <tr><td>Relay</td><td class="mono">wss://otonom-cluster-0.taile59b41.ts.net</td><td><span class="chip live">live</span></td></tr>
+        <tr><td>Pairing relay</td><td class="mono">wss://…:5443</td><td><span class="chip live">live</span></td></tr>
+        <tr><td><span class="mono">@architect</span></td><td>control · implementation</td><td><span class="chip live">online</span></td></tr>
+        <tr><td><span class="mono">@implementer</span></td><td>implementation</td><td><span class="chip live">online</span></td></tr>
+        <tr><td><span class="mono">@spec-reviewer</span></td><td>review</td><td><span class="chip live">online</span></td></tr>
+        <tr><td><span class="mono">@code-reviewer</span></td><td>review</td><td><span class="chip meas">executor</span></td></tr>
+        <tr><td><span class="mono">@verifier</span></td><td>verification</td><td><span class="chip meas">executor</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="col">
+<pre><code>cd deploy/dume-agents
+./run-agents.sh start | status | logs &lt;role&gt;</code></pre>
+    <p>One process per role, each with its own key. A single <code>buzz-acp --agents N</code> pool shares one Nostr identity, so it can never stand in for roles that must be independent.</p>
+    <div class="note"><span class="chip meas">executor</span> means the role runs through DUM-E's own executor rather than ACP: the Claude Code and Codex adapters require an API key, and these CLIs hold subscriptions. A mixed per-role outcome is expected, not a shortfall.</div>
+  </div>
+</section>
+
+<section class="col">
+  <p class="eyebrow">Blocked</p>
+  <h2>What is not working</h2>
+  <p>Two things, both recorded rather than worked around.</p>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>What</th><th>Why</th><th>State</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>The pipeline cannot build a packet</td>
+          <td><code>DUME_COMMISSIONING_IMPLEMENTATION_PACK</code> is in the desktop trash. <code>catalogue.py</code> and <code>wp_packet_builder.py</code> hard-code its path. The 54-package catalogue survives in the state store; only the package text is unreachable.</td>
+          <td><span class="chip block">blocked</span></td>
+        </tr>
+        <tr>
+          <td>No package is <code>ACCEPTED</code></td>
+          <td>Acceptance needs an independent verifier identity, and the store refuses the actor that produced the code. This is the design working.</td>
+          <td><span class="chip block">by design</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <span>Repo · Buzz_Dume</span>
+  <span>Record · baseline/BASELINE_LOCK.md</span>
+  <span>Harness · ~/Desktop/FH/DUM-E</span>
+</footer>
+
+</div>
