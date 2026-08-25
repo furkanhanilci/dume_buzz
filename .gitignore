@@ -13,3 +13,4 @@ deploy/desktop/*.AppImage
 deploy/desktop/squashfs-root/
 deploy/desktop/appdata/
 deploy/desktop/assets.html
+deploy/desktop/Dockerfile.xtools

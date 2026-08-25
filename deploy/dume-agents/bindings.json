@@ -1,0 +1,93 @@
+{
+  "schema": "dume.buzz_deployment_plan/1",
+  "source": "RuntimeRegistry.bind() \u2014 the binder a live run uses",
+  "relay": "wss://otonom-cluster-0.taile59b41.ts.net",
+  "roles": {
+    "architect": {
+      "runtime_id": "qwen-local",
+      "family": "qwen",
+      "model": "Qwen3.8-27B (quantised \u2014 profile decided by WP-005)",
+      "provider": "local",
+      "local": true,
+      "cost_tier": 1,
+      "channels": {
+        "dume-control": "5e3a4c17-05fc-51df-8a0e-18d0d5bb2119",
+        "dume-implementation": "032fb84f-d9e7-536d-ba24-cf34f5a93403"
+      },
+      "independent_of": [],
+      "family_independent_of": []
+    },
+    "implementer": {
+      "runtime_id": "qwen-local",
+      "family": "qwen",
+      "model": "Qwen3.8-27B (quantised \u2014 profile decided by WP-005)",
+      "provider": "local",
+      "local": true,
+      "cost_tier": 1,
+      "channels": {
+        "dume-implementation": "032fb84f-d9e7-536d-ba24-cf34f5a93403"
+      },
+      "independent_of": [
+        "spec_reviewer",
+        "code_reviewer",
+        "verifier"
+      ],
+      "family_independent_of": []
+    },
+    "spec_reviewer": {
+      "runtime_id": "mistral-local",
+      "family": "mistral",
+      "model": "Mistral-Small-3.2-24B-Instruct-2506 (Q4_K_M)",
+      "provider": "local",
+      "local": true,
+      "cost_tier": 2,
+      "channels": {
+        "dume-review": "a90c9561-6e70-556d-8b29-406b13b36a39"
+      },
+      "independent_of": [
+        "implementer"
+      ],
+      "family_independent_of": [
+        "implementer"
+      ]
+    },
+    "code_reviewer": {
+      "runtime_id": "claude-sonnet-5",
+      "family": "claude",
+      "model": "claude-sonnet-5",
+      "provider": "anthropic",
+      "local": false,
+      "cost_tier": 2,
+      "channels": {
+        "dume-review": "a90c9561-6e70-556d-8b29-406b13b36a39"
+      },
+      "independent_of": [
+        "implementer",
+        "spec_reviewer"
+      ],
+      "family_independent_of": [
+        "implementer"
+      ]
+    },
+    "verifier": {
+      "runtime_id": "codex-terra",
+      "family": "gpt",
+      "model": "gpt-5.6-terra",
+      "provider": "openai",
+      "local": false,
+      "cost_tier": 3,
+      "channels": {
+        "dume-verification": "c78a83e9-cde0-5320-92b8-464a3064cf04"
+      },
+      "independent_of": [
+        "implementer",
+        "spec_reviewer",
+        "code_reviewer"
+      ],
+      "family_independent_of": [
+        "implementer"
+      ]
+    }
+  },
+  "violations": []
+}

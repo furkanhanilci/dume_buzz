@@ -11,8 +11,8 @@ sys.path.insert(0, '/home/otonom/Desktop/FH/DUM-E')
 from dume.collaboration.buzz import (
     Identity, BuzzClient, ensure_spaces, ensure_roles, SPACE_CHANNELS, BuzzError)
 
-BASE = "http://100.104.142.19:3100"
-HOST = "100.104.142.19:3100"
+BASE = "https://otonom-cluster-0.taile59b41.ts.net"
+HOST = "otonom-cluster-0.taile59b41.ts.net"
 SEC = pathlib.Path('/home/otonom/Desktop/FH/Buzz_Dume/secrets')
 DESKTOP = sys.argv[1] if len(sys.argv) > 1 else None
 
