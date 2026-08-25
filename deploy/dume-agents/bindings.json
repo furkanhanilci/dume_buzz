@@ -12,7 +12,8 @@
       "cost_tier": 1,
       "channels": {
         "dume-control": "5e3a4c17-05fc-51df-8a0e-18d0d5bb2119",
-        "dume-implementation": "032fb84f-d9e7-536d-ba24-cf34f5a93403"
+        "dume-implementation": "032fb84f-d9e7-536d-ba24-cf34f5a93403",
+        "DUM-E \u00b7 general": "1f2e0764-57ce-5f87-a6a6-ce4195f9d103"
       },
       "independent_of": [],
       "family_independent_of": []
@@ -25,7 +26,8 @@
       "local": true,
       "cost_tier": 1,
       "channels": {
-        "dume-implementation": "032fb84f-d9e7-536d-ba24-cf34f5a93403"
+        "dume-implementation": "032fb84f-d9e7-536d-ba24-cf34f5a93403",
+        "DUM-E \u00b7 general": "1f2e0764-57ce-5f87-a6a6-ce4195f9d103"
       },
       "independent_of": [
         "spec_reviewer",
@@ -42,7 +44,8 @@
       "local": true,
       "cost_tier": 2,
       "channels": {
-        "dume-review": "a90c9561-6e70-556d-8b29-406b13b36a39"
+        "dume-review": "a90c9561-6e70-556d-8b29-406b13b36a39",
+        "DUM-E \u00b7 general": "1f2e0764-57ce-5f87-a6a6-ce4195f9d103"
       },
       "independent_of": [
         "implementer"
@@ -59,7 +62,8 @@
       "local": false,
       "cost_tier": 2,
       "channels": {
-        "dume-review": "a90c9561-6e70-556d-8b29-406b13b36a39"
+        "dume-review": "a90c9561-6e70-556d-8b29-406b13b36a39",
+        "DUM-E \u00b7 general": "1f2e0764-57ce-5f87-a6a6-ce4195f9d103"
       },
       "independent_of": [
         "implementer",
@@ -77,7 +81,8 @@
       "local": false,
       "cost_tier": 3,
       "channels": {
-        "dume-verification": "c78a83e9-cde0-5320-92b8-464a3064cf04"
+        "dume-verification": "c78a83e9-cde0-5320-92b8-464a3064cf04",
+        "DUM-E \u00b7 general": "1f2e0764-57ce-5f87-a6a6-ce4195f9d103"
       },
       "independent_of": [
         "implementer",
@@ -87,6 +92,20 @@
       "family_independent_of": [
         "implementer"
       ]
+    },
+    "commissioning_orchestrator": {
+      "runtime_id": "qwen-local",
+      "family": "qwen",
+      "local": true,
+      "cost_tier": 1,
+      "model": "/models/Qwen3.8-27B-UD-Q4_K_M.gguf",
+      "provider": "local",
+      "channels": {
+        "DUM-E \u00b7 general": "1f2e0764-57ce-5f87-a6a6-ce4195f9d103",
+        "dume-control": "5e3a4c17-05fc-51df-8a0e-18d0d5bb2119"
+      },
+      "independent_of": [],
+      "family_independent_of": []
     }
   },
   "violations": []

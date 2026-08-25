@@ -34,7 +34,12 @@ declare -A ENDPOINT=(
 roles() { python3 -c "import json;print(' '.join(json.load(open('bindings.json'))['roles']))"; }
 field() { python3 -c "import json,sys;print(json.load(open('bindings.json'))['roles'][sys.argv[1]][sys.argv[2]])" "$1" "$2"; }
 channels() { python3 -c "import json,sys;print(','.join(json.load(open('bindings.json'))['roles'][sys.argv[1]]['channels'].values()))" "$1"; }
-key() { python3 -c "import json,sys;print(json.load(open(sys.argv[1]))['role:'+sys.argv[2]]['private'])" "$SECRETS/roles.json" "$1"; }
+key() { python3 -c "
+import json,sys
+d=json.load(open(sys.argv[1])); r=sys.argv[2]
+# The front desk speaks as DUM-E itself, so it uses the application identity —
+# the one carrying the name and the mark — not the orchestrator role slot.
+print((d['dume_orchestrator'] if r=='commissioning_orchestrator' else d['role:'+r])['private'])" "$SECRETS/roles.json" "$1"; }
 
 case "${1:-start}" in
   stop)   for r in $(roles); do docker rm -f "dume-agent-$r" >/dev/null 2>&1 || true; done; echo "stopped"; exit 0 ;;
