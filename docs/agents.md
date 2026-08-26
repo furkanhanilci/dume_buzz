@@ -54,6 +54,18 @@ independent, however many workers it has.
 Each is also restricted to its own channels with `--channels`, and gated with
 `--respond-to allowlist` so only the human owner and DUM-E itself can drive it.
 
+### Fresh sessions where freshness is the point
+
+The two reviewers and the verifier run with `--max-turns-per-session 1`. A
+reviewer that carries yesterday's conversation into today's review is reading
+its own earlier reasoning as if it were evidence, and a verifier that does it is
+not performing a fresh verification at all. One turn per session means there is
+no prior turn to carry — which is the proof, where `!rotate` is only a
+mechanism.
+
+The architect keeps continuity: planning benefits from remembering the shape of
+the thing being planned, and it decides no stage.
+
 ## Who picks the model
 
 Not the scripts. `bindings.json` is generated from DUM-E's own

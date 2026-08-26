@@ -35,6 +35,15 @@ CLAUDE_ROLES="commissioning_orchestrator spec_reviewer code_reviewer"
 # of an older build. Keeping the verifier on gpt also keeps three families
 # in the channel rather than one.
 CODEX_ROLES="verifier"
+# BZ-036. A reviewer that carries yesterday's conversation into today's review
+# is reading its own earlier reasoning as if it were evidence, and a verifier
+# that does it is not a fresh verification at all. One turn per session drops
+# the context between mentions, so each judgement starts from the packet and the
+# artefact rather than from what it decided last time.
+#
+# The pack is explicit that !rotate is a useful mechanism and not by itself
+# proof of freshness — proof is that there is no prior turn to carry.
+FRESH_SESSION_ROLES="spec_reviewer code_reviewer verifier"
 
 # Endpoints for the local families, by runtime id.
 declare -A ENDPOINT=(
@@ -69,6 +78,10 @@ for role in $(roles); do
   # speak through it.
   case " $CLAUDE_ROLES " in *" $role "*) USE_CLAUDE=1 ;; *) USE_CLAUDE=0 ;; esac
   case " $CODEX_ROLES " in *" $role "*) USE_CODEX=1 ;; *) USE_CODEX=0 ;; esac
+  case " $FRESH_SESSION_ROLES " in
+    *" $role "*) FRESH="--max-turns-per-session 1" ;;
+    *) FRESH="" ;;
+  esac
   if [ "$USE_CODEX" = "1" ]; then
     docker rm -f "dume-agent-$role" >/dev/null 2>&1 || true
     mkdir -p "$PWD/work/$role"
@@ -95,6 +108,7 @@ for role in $(roles); do
         --channels "$(channels "$role")" \
         --system-prompt-file "/prompts/$role.md" \
         --dedup queue \
+        ${FRESH} \
       >/dev/null
     echo "  $role → codex / gpt-5.6 (ChatGPT subscription) : started"
     continue
@@ -134,6 +148,7 @@ for role in $(roles); do
         --channels "$(channels "$role")" \
         --system-prompt-file "/prompts/$role.md" \
         --dedup queue \
+        ${FRESH} \
       >/dev/null
     echo "  $role → claude (CLI subscription, no API key) : started"
     continue

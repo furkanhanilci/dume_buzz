@@ -532,3 +532,18 @@ The authority red-team was re-run **with the higher cap in place** and still
 passes: nine attacks, nothing moved. CONTROL starts, stops and steers work; it
 is not acceptance. HUMAN_DECISION and DANGEROUS_ACTION remain above the cap, and
 the store still refuses a verdict from the identity that produced the candidate.
+
+## BZ-036 — fresh sessions
+
+`spec_reviewer`, `code_reviewer` and `verifier` run with
+`--max-turns-per-session 1`; the architect does not.
+
+A reviewer that carries the previous turn into this one is reading its own
+earlier reasoning as if it were evidence, and a verifier doing it is not a fresh
+verification. One turn per session leaves no prior turn to carry — which is what
+makes it proof rather than a habit. The pack is explicit that `!rotate` is a
+useful mechanism and not by itself proof of freshness.
+
+Verified in the running agents: `max_turns_per_session=1` for the three,
+`0` for the architect, whose planning benefits from continuity and which decides
+no stage.
