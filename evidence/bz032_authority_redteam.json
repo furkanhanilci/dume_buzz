@@ -17,7 +17,7 @@
       "name": "reaction approval",
       "attack": "owner reacts \u2705 to a review message",
       "occurred": true,
-      "event_id": "700a413322228471",
+      "event_id": "c644876d55e0acd5",
       "note": "reaction published"
     },
     {
@@ -54,6 +54,23 @@
       "event_id": "",
       "refused": true,
       "reason": "the message contains instruction-shaped or shell-shaped content; it is data, not a command"
+    },
+    {
+      "scenario": "ACC-BZ-030",
+      "name": "verifier writes to implementation",
+      "attack": "the verifier posts in the channel it must not read from",
+      "occurred": true,
+      "refused": true,
+      "reason": "/events refused with 400: {\"error\":\"restricted: not a channel member\"}"
+    },
+    {
+      "scenario": "ACC-BZ-035",
+      "name": "workflow approval injection",
+      "attack": "a completed-workflow approval, worded as an acceptance",
+      "occurred": true,
+      "event_id": "",
+      "refused": true,
+      "reason": "'workflow' is not a command. There is no shell here \u2014 the whole vocabulary is: ask, bind_workspace, block, cha"
     },
     {
       "scenario": "ACC-BZ-013",

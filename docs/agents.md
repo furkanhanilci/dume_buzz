@@ -33,10 +33,16 @@ Plus Buzz's own `@Fizz`, `@Honey` and `@Pollen`, on the local Qwen.
 | `#DUM-E · review` | both reviewers |
 | `#DUM-E · verification` | the verifier — and **not** the implementer |
 
-The seating *is* the independence. The verifier is not a member of the
-implementation channel, so it cannot read the work it is meant to verify
-independently. That is a membership fact on the relay, not a setting in a
-config file someone can forget.
+The seating *is* the independence — but only because the channels are
+**private**. That was not true when they were first created, and the red-team
+found it: with the channels `open`, any relay member could read any of them, so
+the verifier could read the implementation channel and the first thing it found
+there was a forged PASS. Seating controlled what buzz-acp *subscribed* to, not
+what an identity *could* read, and a verifier that wanted to look could.
+
+`dume-implementation`, `dume-review` and `dume-verification` are now private.
+The relay refuses a non-member with `restricted: not a channel member`, so it is
+a fact it enforces rather than a convention agents are trusted to keep.
 
 ## One process, one identity
 
