@@ -29,10 +29,10 @@ import sys
 import time
 
 sys.path.insert(0, "/home/otonom/Desktop/FH/DUM-E")
-from dume.collaboration.buzz import (BuzzClient, Identity,          # noqa: E402
-                                     SPACE_CHANNELS, TYPE_TAG)
-from dume.control.command_gateway import (CommandGateway,           # noqa: E402
-                                          CommandRefused, Principal, READ)
+from dume.collaboration.buzz import (BuzzClient, BuzzError,         # noqa: E402
+                                     Identity, SPACE_CHANNELS)
+from dume.control.command_gateway import (CommandGateway, CONTROL,  # noqa: E402
+                                          CommandRefused, Principal)
 from dume.control.intent_handler import IntentHandler               # noqa: E402
 from dume.runtimes.profiles import RuntimeRegistry                  # noqa: E402
 from dume.state import Store                                        # noqa: E402
@@ -83,20 +83,30 @@ def strip_mention(text: str, names: list[str]) -> str:
 
 
 def build_gateway(operator_pubkey: str) -> CommandGateway:
-    """One principal, capped at READ.
+    """One principal, capped at CONTROL.
 
     `verified=True` says the surface established this identity: the relay
     checked a Nostr signature before the event was stored. That is the
     difference between a sender and a claim, and it is the whole reason a chat
     message may be trusted this far and no further.
 
-    `max_class=READ` is the BZ-052 boundary. Raising it is BZ-053's decision,
-    after the authority red-team, not a config change made in passing.
+    This was READ until BZ-032 and BZ-047 ran. It is CONTROL now because those
+    produced a result rather than a good feeling: a forged PASS, a reaction, a
+    stolen display name, a replayed command, a command in the wrong channel, an
+    injected directive and a producer accepting its own package all landed as
+    real events and moved nothing — and the relay was stopped twice without the
+    state noticing.
+
+    CONTROL starts, stops and steers work. It is not acceptance. HUMAN_DECISION
+    and DANGEROUS_ACTION stay above the cap, and the store still refuses a
+    verdict from the identity that produced the candidate — so the class that
+    actually matters is closed by two independent mechanisms, not by this
+    number.
     """
     return CommandGateway(
         principals={operator_pubkey: Principal(
             actor_id=operator_pubkey, display_name="operator",
-            max_class=READ, verified=True)},
+            max_class=CONTROL, verified=True)},
         audit_path=AUDIT)
 
 
@@ -104,7 +114,17 @@ def one_pass(client: BuzzClient, gateway: CommandGateway, handler: IntentHandler
              dume_pubkey: str, names: list[str], seen: set, limit: int = 20) -> int:
     handled = 0
     for channel, label in COMMAND_CHANNELS.items():
-        for event in client.read(channel, limit=limit):
+        try:
+            events = client.read(channel, limit=limit)
+        except BuzzError as exc:
+            # The relay is unreachable, which says nothing about any command and
+            # nothing about the work. Nothing is marked seen, so whatever was
+            # sent during the outage is answered when it comes back — an outage
+            # is a delay, not a lost command. Crashing here would have made it a
+            # lost command, which is what the first version of this did.
+            print(f"  {label}: relay unavailable — {str(exc)[:80]}")
+            continue
+        for event in events:
             event_id = event.get("id") or ""
             if not event_id or event_id in seen:
                 continue
@@ -140,8 +160,15 @@ def one_pass(client: BuzzClient, gateway: CommandGateway, handler: IntentHandler
                          f"running it: {type(exc).__name__}: {exc}\n\n"
                          f"`from {event_id[:12]} — no state changed`")
 
-            client.announce(channel, reply[:3500], mentions=[author],
-                            message_type="STATUS")
+            try:
+                client.announce(channel, reply[:3500], mentions=[author],
+                                message_type="STATUS")
+            except BuzzError as exc:
+                # The answer could not be delivered. Un-see the event so it is
+                # answered on the next pass rather than silently dropped.
+                seen.discard(event_id)
+                print(f"  {label}: could not deliver — {str(exc)[:70]}")
+                continue
             handled += 1
 
     save_seen(seen)
@@ -165,7 +192,7 @@ def main() -> int:
 
     gateway = build_gateway(desktop)
     gateway.principals[owner] = Principal(actor_id=owner, display_name="owner",
-                                          max_class=READ, verified=True)
+                                          max_class=CONTROL, verified=True)
     # The same store the CLI reads. A command from a channel and a command from
     # a terminal reach the same state through the same handler, so they cannot
     # disagree about what a package's state is.
@@ -175,7 +202,7 @@ def main() -> int:
     names = ["DUM-E", "dume"]
     seen = load_seen()
 
-    print(f"command bridge · {len(COMMAND_CHANNELS)} channel(s) · READ only")
+    print(f"command bridge · {len(COMMAND_CHANNELS)} channel(s) · READ + CONTROL")
     while True:
         n = one_pass(client, gateway, handler, app["pubkey"], names, seen,
                      limit=args.limit)

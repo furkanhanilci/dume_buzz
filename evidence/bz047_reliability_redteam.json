@@ -1,0 +1,55 @@
+{
+  "schema": "dume.bz047_reliability_redteam/1",
+  "state_before": "ec7e02deb8ef05a1",
+  "state_after": "ec7e02deb8ef05a1",
+  "state_unmoved": true,
+  "scenarios": [
+    {
+      "scenario": "ACC-BZ-016",
+      "name": "relay outage during implementation",
+      "occurred": true,
+      "publish_refused": true,
+      "reason": "/events refused with 502: ",
+      "store_readable_during_outage": true,
+      "state_unchanged_during_outage": true,
+      "relay_recovered": true
+    },
+    {
+      "scenario": "ACC-BZ-017",
+      "name": "relay outage during command",
+      "occurred": true,
+      "bridge_survived_outage": true,
+      "bridge_output_during": "command bridge \u00b7 1 channel(s) \u00b7 READ only\n  DUM-E \u00b7 control: relay unavailable \u2014 /query refused with 502:",
+      "answered_after_recovery": true,
+      "relay_recovered": true
+    },
+    {
+      "scenario": "ACC-BZ-019",
+      "name": "agent crash and respawn",
+      "occurred": true,
+      "restarted": true,
+      "same_identity": true,
+      "reconnected": true
+    },
+    {
+      "scenario": "ACC-BZ-028",
+      "name": "stale mention replay after restart",
+      "occurred": true,
+      "seen_ids_persisted": 20,
+      "second_pass_handled_nothing": true,
+      "first_pass": "command bridge \u00b7 1 channel(s) \u00b7 READ only"
+    },
+    {
+      "scenario": "ACC-BZ-032",
+      "name": "Buzz unavailable at the gate",
+      "occurred": true,
+      "store_readable": true,
+      "projector_degraded": true,
+      "watermark_did_not_advance_past_undelivered": true,
+      "watermark_before": 115,
+      "watermark_after": 115,
+      "relay_recovered": true
+    }
+  ],
+  "verdict": "PASS"
+}
