@@ -163,6 +163,18 @@ the first hypothesis to survive was reached by re-running with the transcript
 saved before the raise. It now is, on every raise, and the refusal message names
 the calls it refuses.
 
+### The transcript stopped before the deliverables it is evidence for
+
+`tool_log.json` was written where the red-then-green cycle ends. The
+deliverable turns run after that, through the same tools — so every call that
+produced a mandatory deliverable was missing from the record of what the agent
+actually did, which is the phase the `deliverables` gate then returns a verdict
+on. Two live runs reported 19 and 17 tool calls against files holding 8 and 11.
+
+Found by chasing that discrepancy rather than assuming the count was cosmetic.
+It is written again after the deliverable turns, and a test asserts the file
+and the reported number agree.
+
 ### A missing pytest was reported as a failing test
 
 `python -m pytest` on an interpreter without pytest exits **1** — the same code
