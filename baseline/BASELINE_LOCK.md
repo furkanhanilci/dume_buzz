@@ -547,3 +547,48 @@ useful mechanism and not by itself proof of freshness.
 Verified in the running agents: `max_turns_per_session=1` for the three,
 `0` for the architect, whose planning benefits from continuity and which decides
 no stage.
+
+## BZ-049 — a hypothesis that was wrong, and the measurement that killed it
+
+The rehearsal failed at `implement`. The obvious suspect was contention: Qwen is
+served with `-np 2` and five agents were pointed at it.
+
+Re-run with **every agent stopped**: identical failure. Contention was not the
+cause, and the measurement is worth more than the guess it replaced. The `-np 2`
+ceiling is still real and still worth raising before a real pilot — it just did
+not cause this.
+
+## BZ-057 — attempted, not passed
+
+The rehearsal reaches `implement` and stops there.
+
+```
+precondition · packet · cohort · runtime_binding · plan · worktree    OK
+implement                                                            FAILED
+runtime_switch  qwen-local → mistral-local, role kept, state carried  OK
+implement (after switch)                                             FAILED
+failure_classification  RUNTIME_FAILURE · candidate implicated: False  OK
+```
+
+What has been ruled out, each by measurement rather than reasoning:
+
+| suspect | how it was ruled out |
+|---|---|
+| GPU contention | same failure with zero agents running |
+| Qwen tool calling | `qualify qwen-local` — 5/5 well-formed |
+| the runtime changes made here | bindings identical to the 08-24 run that reached MERGE_ELIGIBLE |
+| the restored pack | packet digest `66921faa41f4`, same as that run |
+| one model family | fails identically on qwen and mistral |
+
+Not yet known: why the implementer takes three turns without touching a file.
+DUM-E's own record lists a near neighbour — *"an unrestricted reasoning phase
+spent the response budget deliberating and the tool call never arrived"* — which
+is worth checking first, but it has not been checked, so it is not a finding.
+
+**What did work is worth stating plainly.** The harness called this a
+`RUNTIME_FAILURE` with the candidate *not* implicated, and rebound the role to a
+different family mid-run while carrying the task state and dropping the
+conversation. The invariant it exists to hold — a failure to run is not a
+failure to implement — held under a real failure rather than a described one.
+
+BZ-057 is therefore **open**, and BZ-058 stays behind it.
