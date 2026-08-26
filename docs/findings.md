@@ -128,6 +128,52 @@ one error at a time: personas live in `agents/personas.json`, the field is
 `system_prompt`, and an agent whose persona is missing is left orphaned and
 refused.
 
+### The idle detector refused the cycle it exists to enforce
+
+The live rehearsal died at `implement` on two model families, seven runs in a
+row, with *the implementer took 3 turns in a row without changing a file*. The
+transcript said the opposite: it had written the test, run it red, and written
+the code.
+
+Two defects compounded. `turn_idle` was computed at the bottom of the turn loop
+and read at the top of the **next** one, so every turn was judged by what the
+previous turn did — a write that followed a test run was idle however much it
+changed. And a lone `run_tests` was idle unconditionally, when the red run is
+one the protocol requires.
+
+Together they spent the whole three-turn budget on the canonical cycle: write
+the test, run it red, write the code, run it green. Four correct turns, refused
+for being correct.
+
+The reason it ever worked is the uncomfortable part. The passing run of 08-24
+did the same four things in **three** turns, because that model bundled a write
+and a run into one. The harness was passing on a property of the model, not on
+the discipline, and nothing recorded that it was.
+
+Idle is now decided where the turn's own results are: a run of the tests is
+progress exactly once per change, and a second one on an unchanged tree is the
+loop worth refusing. Both original stalls still die, under test.
+
+### The refusal destroyed the evidence for the refusal
+
+`tool_log.json` was written after the loop returned, so a raise took it with
+it. The only runs with no record of what the implementer did were the runs that
+failed — the ones worth reading. Six rehearsals were diagnosed without it, and
+the first hypothesis to survive was reached by re-running with the transcript
+saved before the raise. It now is, on every raise, and the refusal message names
+the calls it refuses.
+
+### A missing pytest was reported as a failing test
+
+`python -m pytest` on an interpreter without pytest exits **1** — the same code
+as a test that ran and failed. `run_tests` returned it as the red phase, so a
+run launched with the wrong interpreter reported a correct red, could never
+reach green, and the implementer was blamed for the host.
+
+This is the invariant DUM-E states about itself: a failure to run is not a
+failure to implement. It now checks the runner is there and says so when it is
+not.
+
 ## Faults in code written here
 
 Kept because the fix is only half the record.
